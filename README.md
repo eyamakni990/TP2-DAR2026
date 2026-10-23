@@ -1,5 +1,5 @@
 # Compte rendu du TP N°2
-## Activité 2 : Échange d’une opération complète entre un Client et un Serveur TCP
+## Activité 1 : Échange d’une opération complète entre un Client et un Serveur TCP
 
 ### 1. Objectif du TP
 
