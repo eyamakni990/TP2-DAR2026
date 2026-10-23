@@ -1,97 +1,105 @@
 # Compte rendu du TP N°2
-## Activité 2 : Échange d’une opération complète entre un Client et un Serveur TCP
+## Activité 2-2 : Échange d’objets en Java à travers les sockets TCP
 
 ### 1. Objectif du TP
 
-L’objectif de cette activité est d’étendre les applications Client et Serveur développées dans le TP N°1 activité 2 afin de permettre l’échange d’informations plus complexes à travers une connexion TCP.
+L’objectif de cette activité est de se familiariser avec les flux de traitement des objets en Java et de comprendre comment transmettre un objet d’une application cliente vers une application serveur à travers une connexion TCP.
 
-Le client doit envoyer les éléments d’une opération arithmétique au serveur. Le serveur effectue le calcul demandé, puis renvoie le résultat au client, qui l’affiche à l’écran.
+L’application permet au client d’envoyer un objet contenant les informations nécessaires à une opération arithmétique. Le serveur reçoit cet objet, récupère ses données, effectue le calcul demandé et renvoie le résultat au client.
 
-### 2. Réalisation de l’application
 
-#### 2.1. Application Client
+### 2. Implémentation de l’échange d’objets
+
+#### 2.1. Création de la classe sérialisable
+
+Une classe nommée `Operation` est créée pour représenter une opération arithmétique. Elle implémente l’interface `Serializable`, ce qui permet à ses objets d’être transmis à travers un flux d’objets.
+
+Cette classe contient trois attributs :
+- `operande1` : le premier nombre ;
+- `operateur` : l’opérateur arithmétique ;
+- `operande2` : le deuxième nombre.
+
+Des méthodes d’accès permettent au serveur de récupérer les informations contenues dans l’objet reçu.
+
+   <img width="676" height="773" alt="image" src="https://github.com/user-attachments/assets/b8903796-559d-48d0-96d3-d1ceca273475" />
+
+
+#### 3.2. Application Client
 
 Le client établit une connexion TCP avec le serveur à l’aide de la classe `Socket`.
 
-   <img width="581" height="41" alt="image" src="https://github.com/user-attachments/assets/af2af003-596b-4a1c-b686-9503c472d51b" />
+   <img width="579" height="35" alt="image" src="https://github.com/user-attachments/assets/80bc8c56-baff-49ba-adc2-bb0719c82749" />
 
 
-Il demande ensuite à l’utilisateur de saisir :
-- Le premier opérande.
-- L’opérateur arithmétique (`+`, `-`, `*` ou `/`).
-- Le deuxième opérande.
+Il demande à l’utilisateur de saisir le premier opérande, l’opérateur et le deuxième opérande. Ensuite, il crée un objet de type `Operation` contenant ces informations.
 
-    <img width="565" height="277" alt="image" src="https://github.com/user-attachments/assets/4915c3bb-32a0-49d0-9952-73c09e833316" />
-
-Les trois éléments sont envoyés séparément au serveur à l’aide de `PrintWriter` et de la méthode `println()`.
-    <img width="278" height="88" alt="image" src="https://github.com/user-attachments/assets/9f13c377-f444-4043-ab48-f44a42aa1745" />
-
-Après l’envoi, le client attend la réponse du serveur avec `BufferedReader` et affiche le résultat reçu.
-
-   <img width="887" height="63" alt="image" src="https://github.com/user-attachments/assets/0edf36cd-51f8-4ad8-b98f-c6fc2c47ea9c" />
+   <img width="563" height="285" alt="image" src="https://github.com/user-attachments/assets/2a363ba6-82f5-4f93-835a-548f1012d000" />
 
 
-#### 2.2. Application Serveur
+L’objet est envoyé au serveur à l’aide de `ObjectOutputStream` et de la méthode `writeObject()`.
 
-Le serveur crée un objet `ServerSocket` sur le port 1234 et attend la connexion d’un client avec la méthode `accept()`.
-
-  <img width="592" height="146" alt="image" src="https://github.com/user-attachments/assets/baadab37-b646-47c9-abc8-7a731fe471a1" />
-
-Après l’établissement de la connexion, le serveur reçoit les trois éléments envoyés par le client :
-- Le premier opérande.
-- L’opérateur.
-- Le deuxième opérande.
-
-  <img width="489" height="92" alt="image" src="https://github.com/user-attachments/assets/c0bf88af-59cb-4aae-a9e4-270b1f3286ad" />
+   <img width="755" height="30" alt="image" src="https://github.com/user-attachments/assets/9bf09a13-d701-428e-8aa4-00a3032aae65" />
+   <img width="296" height="60" alt="image" src="https://github.com/user-attachments/assets/4e1efe31-bc33-497b-b7d2-5cd72397cb34" />
 
 
-Il utilise ensuite une structure `switch` pour identifier l’opération demandée et calculer le résultat correspondant.
 
-Les quatre opérations arithmétiques sont prises en charge : addition, soustraction, multiplication et division. Le serveur vérifie également que le diviseur n’est pas nul avant d’effectuer une division.
+Après l’envoi, le client attend la réponse du serveur à travers `ObjectInputStream`, puis affiche le résultat reçu.
 
-  <img width="561" height="689" alt="image" src="https://github.com/user-attachments/assets/d88bb2d4-3871-4e6f-9519-09b67062fe0a" />
-
-
-Enfin, le résultat est envoyé au client à l’aide de `PrintWriter`.
-
-  <img width="763" height="57" alt="image" src="https://github.com/user-attachments/assets/7d85c07a-0b46-477f-8da2-2c10b2e542e4" />
+   <img width="722" height="30" alt="image" src="https://github.com/user-attachments/assets/dc81a256-7689-4345-883e-7bfc95910c6b" />
 
 
-### 4. Flux de communication
+#### 2.3. Application Serveur
 
-Le fonctionnement de l’application suit les étapes suivantes :
+Le serveur crée un objet `ServerSocket` sur le port 1234 et attend la connexion d’un client.
 
-1. Le serveur démarre et attend une connexion.
-2. Le client se connecte au serveur.
-3. Le client saisit les deux opérandes et l’opérateur.
-4. Le client envoie les trois éléments séparément.
-5. Le serveur reçoit les données et effectue le calcul.
-
-### 5. Exemple d’exécution
-
-Côté Client :
-
-<img width="380" height="170" alt="image" src="https://github.com/user-attachments/assets/3c085f65-6adb-4c72-9b73-e6d146296e8e" />
+   <img width="584" height="70" alt="image" src="https://github.com/user-attachments/assets/b17b5386-a361-4e39-9066-19b884c14c8f" />
 
 
-Côté Serveur :
+Après l’établissement de la connexion, il utilise `ObjectInputStream` et la méthode `readObject()` pour recevoir l’objet envoyé par le client.
 
-<img width="372" height="122" alt="image" src="https://github.com/user-attachments/assets/beafe435-164c-4cfb-add6-5870094d6076" />
+   <img width="722" height="61" alt="image" src="https://github.com/user-attachments/assets/6f40c1b1-d3cf-4dff-9be1-03ab90d5dc0f" />
 
-Cet exemple montre que le client envoie les valeurs 55 et 30 avec l’opérateur de multiplication. Le serveur calcule ensuite 55 × 30 et renvoie le résultat 1650 au client.
 
-### 6. Difficultés et solutions
+Le serveur récupère ensuite le premier opérande, l’opérateur et le deuxième opérande à l’aide des méthodes d’accès de la classe `Operation`.
 
-La principale difficulté consiste à assurer la transmission correcte des données entre le client et le serveur.
+   <img width="478" height="96" alt="image" src="https://github.com/user-attachments/assets/8f6aa8f0-8989-4241-b348-0eee4cfafd32" />
 
-Pour résoudre ce problème, les trois éléments de l’opération sont envoyés dans un ordre précis : premier opérande, opérateur, puis deuxième opérande. Le serveur lit les données dans le même ordre.
 
-L’utilisation de BufferedReader et de PrintWriter facilite la transmission des données sous forme de texte. La structure switch permet ensuite de sélectionner le calcul approprié.
+Une structure `switch` permet de réaliser l’opération demandée : addition, soustraction, multiplication ou division. Le serveur vérifie également que le diviseur n’est pas nul.
 
-### 7. Conclusion
+   <img width="613" height="715" alt="image" src="https://github.com/user-attachments/assets/27ac2601-cfd6-4dbf-b681-13f109face70" />
 
-Ce TP a permis de mettre en pratique la communication entre un client et un serveur à l’aide des sockets TCP en Java.
 
-L’application réalisée permet au client d’envoyer une opération arithmétique complète sous forme de trois éléments distincts. Le serveur traite la demande, calcule le résultat et le renvoie au client.
+Enfin, le résultat est transmis au client à l’aide de `ObjectOutputStream` et de la méthode `writeObject()`.
 
-Cette activité permet ainsi de mieux comprendre le fonctionnement des sockets, les flux d’entrée-sortie et l’échange de données entre deux applications réparties.
+   <img width="741" height="33" alt="image" src="https://github.com/user-attachments/assets/094d25e3-20b6-4963-9a8c-a470ceeb935e" />
+   <img width="430" height="55" alt="image" src="https://github.com/user-attachments/assets/c918d200-4563-4cb6-af6a-ff03bb496ff9" />
+
+
+
+### 3. Exemple d’exécution
+
+coté client :
+
+   <img width="421" height="177" alt="image" src="https://github.com/user-attachments/assets/5fdc475c-066e-4626-a20a-35e8367b7b62" />
+
+coté serveur :
+
+   <img width="340" height="110" alt="image" src="https://github.com/user-attachments/assets/8df526ae-a859-482c-95f6-f79c6fd942ec" />
+
+
+### 4. Rôle des flux d’objets
+
+Les classes `ObjectOutputStream` et `ObjectInputStream` permettent respectivement d’envoyer et de recevoir des objets Java.
+
+Contrairement aux flux de caractères utilisés dans l’activité précédente, ces flux permettent de transmettre directement un objet contenant plusieurs attributs.
+
+L’interface `Serializable` est nécessaire pour autoriser la sérialisation de l’objet `Operation`.
+
+### 5. Conclusion
+
+Cette activité a permis de découvrir la sérialisation en Java et l’échange d’objets entre deux applications communiquant par sockets TCP.
+
+Grâce à la classe `Operation`, le client peut regrouper les informations d’une opération arithmétique dans un seul objet. Le serveur reçoit cet objet, traite les données et renvoie le résultat au client.
+
+Ce travail permet de mieux comprendre l’utilisation des flux d’objets dans les applications réparties et complète les notions abordées dans l’activité précédente.
